@@ -31,7 +31,7 @@ const filterOptions = [
 
 export default function SidePanel() {
   const { connected, client } = useLiveAPIContext();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const loggerRef = useRef<HTMLDivElement>(null);
   const loggerLastHeightRef = useRef<number>(-1);
   const { log, logs } = useLoggerStore();
@@ -117,7 +117,7 @@ export default function SidePanel() {
         <div className={cn("streaming-indicator", { connected })}>
           {connected
             ? `🔵${open ? " Streaming" : ""}`
-            : `⏸️${open ? " Paused" : ""}`}
+            : `���️${open ? " Paused" : ""}`}
         </div>
       </section>
       <div className="side-panel-container" ref={loggerRef}>
