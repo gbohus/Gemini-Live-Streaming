@@ -17,9 +17,21 @@
 import { useState, useEffect } from "react";
 import { UseMediaStreamResult } from "./use-media-stream-mux";
 
-export function useWebcam(): UseMediaStreamResult {
+export type WebcamConfig = {
+  facingMode?: "user" | "environment";
+  mirrored?: boolean;
+};
+
+export function useWebcam(): UseMediaStreamResult & {
+  switchCamera: () => Promise<void>;
+  toggleMirror: () => void;
+  isMirrored: boolean;
+  currentFacingMode: "user" | "environment";
+} {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
+  const [isMirrored, setIsMirrored] = useState(true);
 
   useEffect(() => {
     const handleStreamEnded = () => {
@@ -42,7 +54,9 @@ export function useWebcam(): UseMediaStreamResult {
 
   const start = async () => {
     const mediaStream = await navigator.mediaDevices.getUserMedia({
-      video: true,
+      video: {
+        facingMode: facingMode,
+      },
     });
     setStream(mediaStream);
     setIsStreaming(true);
@@ -57,12 +71,29 @@ export function useWebcam(): UseMediaStreamResult {
     }
   };
 
-  const result: UseMediaStreamResult = {
-    type: "webcam",
+  const switchCamera = async () => {
+    const newFacingMode = facingMode === "user" ? "environment" : "user";
+    setFacingMode(newFacingMode);
+    if (isStreaming) {
+      stop();
+      await start();
+    }
+  };
+
+  const toggleMirror = () => {
+    setIsMirrored(!isMirrored);
+  };
+
+  const result = {
+    type: "webcam" as const,
     start,
     stop,
     isStreaming,
     stream,
+    switchCamera,
+    toggleMirror,
+    isMirrored,
+    currentFacingMode: facingMode,
   };
 
   return result;
