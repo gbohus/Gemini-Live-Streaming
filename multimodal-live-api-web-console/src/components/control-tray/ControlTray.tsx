@@ -109,11 +109,6 @@ function ControlTray({
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.srcObject = activeVideoStream;
-      if (videoRef.current && webcam.isMirrored && webcam.isStreaming) {
-        videoRef.current.style.transform = 'scaleX(-1)';
-      } else if (videoRef.current) {
-        videoRef.current.style.transform = 'scaleX(1)';
-      }
     }
 
     let timeoutId = -1;
@@ -145,7 +140,7 @@ function ControlTray({
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [connected, activeVideoStream, client, videoRef, webcam.isMirrored]);
+  }, [connected, activeVideoStream, client, videoRef]);
 
   //handler for swapping from one video-stream to the next
   const changeStreams = (next?: UseMediaStreamResult) => async () => {
@@ -196,24 +191,6 @@ function ControlTray({
               onIcon="videocam_off"
               offIcon="videocam"
             />
-            {webcam.isStreaming && (
-              <>
-                <button 
-                  className="action-button" 
-                  onClick={webcam.switchCamera}
-                  title="Switch Camera"
-                >
-                  <span className="material-symbols-outlined">flip_camera_ios</span>
-                </button>
-                <button 
-                  className="action-button" 
-                  onClick={webcam.toggleMirror}
-                  title="Mirror Camera"
-                >
-                  <span className="material-symbols-outlined">flip</span>
-                </button>
-              </>
-            )}
           </>
         )}
         {children}
